@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+sqlalchemy
+pypdf
+chromadb
+langchain
+langchain-community
+SpeechRecognition
+google-generativeai
+python-dotenv

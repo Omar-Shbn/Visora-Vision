@@ -1,0 +1,71 @@
+--- Reading Week 1 Deliverables – Project Definition & Architecture (1).docx ---
+Week 1 Deliverables – Project Definition & Architecture
+Project Title EDGE AR-Powered Industrial Knowledge Platform
+1. Executive Summary
+Executive summary: In industrial and defense environments, operational knowledge is often lost when experienced workers leave, and new workers struggle to learn complex machine repairs quickly. Furthermore, workers in the field cannot easily stop their tasks to type questions into a computer or search through thick manuals. This leads to increased downtime, safety risks, and slow onboarding.
+Our solution is a secure, edge-deployed AR (Augmented Reality) Knowledge Platform. It uses AR glasses to provide workers with a hands-free, voice-activated AI assistant that can see what they see and answer questions using official machine manuals. Additionally, expert workers can use the AR glasses to record repair sessions. The AI automatically analyzes these videos to create step-by-step summaries, tool lists, and safety notes. These summaries are saved to a shared web platform, creating a permanent, searchable institutional memory.
+The proposed solution provides immense value by ensuring no knowledge is ever lost, accelerating onboarding, and allowing workers to get real-time help without taking their hands off the machine. Because it uses local, open-source AI models (like Ollama), it works without the internet, ensuring total data security and operational resilience.
+This week's deliverables:
+Finalize roles and contributions
+Finalize use cases
+Architecture diagram
+Tech stack confirmation
+2. Project Objectives
+List clear, measurable objectives for the project.
+Objective 1: Build a voice-triggered AR assistant that can answer maintenance questions locally within 3 seconds using RAG (Retrieval-Augmented Generation).
+Objective 2: Develop an AI pipeline that automatically analyzes a recorded repair video and extracts a step-by-step summary, parts list, and tools list.
+Objective 3: Create a secure web platform where workers can search and chat with both official machine manuals and past recorded repair sessions.
+3. Team Structure & Roles
+3.1 Team A – Responsibilities
+Role Name
+Key Responsibilities
+Edge AI Engineer
+Set up Ollama, Whisper (Speech-to-Text), and Qwen-VL (Vision) on the local edge server.
+AR / Hardware Lead
+Connect the AR glasses camera and microphone to the edge server. Handle the wake-word trigger.
+Backend / RAG Developer
+Build the Vector Database and the RAG pipeline to search manuals and video summaries.
+Frontend Developer
+Build the web platform where workers can view videos, read summaries, and use the chat interface.
+3.3 Collaboration & Communication
+Github: [Insert GitHub Link Here]
+4. Use Case Diagram
+4.1 Primary Use Cases
+Use Case ID: UC-01 Title: Hands-Free AR Assistance Actor(s): Field Worker Description: The worker shall use a wake word to activate the AR glasses. They will ask a question about the machine they are looking at. The AI will see the machine, search the manuals, and reply with audio instructions so the worker can keep their hands free. Preconditions: Worker is wearing AR glasses connected to the local edge server. Main Flow:
+Worker says the wake word (e.g., "Hey Assistant").
+AR glasses capture a picture of the machine and record the worker's question.
+System converts audio to text and sends both text and image to the local AI.
+AI searches the Vector DB for the correct manual.
+AI generates an answer and plays it back as audio in the worker's earpiece. Postconditions: None Priority: High
+Use Case ID: UC-02 Title: Record Expert Repair Session Actor(s): Expert Worker Description: An expert worker shall record a complex repair using the AR glasses so that the knowledge is saved for future workers. Preconditions: Worker is logged into the AR system as an Expert. Main Flow:
+Expert worker starts the recording on the AR glasses.
+Expert performs the repair while explaining the steps out loud.
+Expert stops the recording.
+The video and audio are saved to the local edge server for processing. Postconditions: A raw video file is saved and queued for AI analysis. Priority: High
+Use Case ID: UC-03 Title: Auto-Generate Repair Summary Actor(s): System (AI) Description: The system shall automatically analyze uploaded repair videos to extract the steps, tools, and parts used, making the video easy to search and understand. Preconditions: A new repair video has been uploaded to the server. Main Flow:
+The AI vision model watches the video and reads the audio transcript.
+The AI generates a structured summary (Machine Name, Tools Needed, Parts Needed, Step-by-Step Guide).
+The system saves this summary and the video link into the Vector Database. Postconditions: The repair session is now searchable on the web platform. Priority: High
+Use Case ID: UC-04 Title: Platform Knowledge Chat Actor(s): New Worker / Trainee Description: A new worker shall use the web platform chat to ask how to do a specific repair. The AI will answer using both official manuals and summaries of past expert recordings. Preconditions: Worker is logged into the web platform. Main Flow:
+Worker types a question (e.g., "How do I replace the seal on Machine 7?").
+The RAG system searches official manuals AND past video summaries.
+The AI provides a combined answer (e.g., "The manual says use Tool X. In a past video, Expert Y also recommended checking the pressure valve first.").
+The system provides a link to watch Expert Y's video. Postconditions: None Priority: High
+5. System Architecture Overview
+5.1 Architecture Summary
+The architecture is divided into two main layers: the Edge Field Layer and the Platform Layer. Both run entirely on-premise without needing the internet, ensuring total data security (Sovereign AI).
+The Edge Field Layer consists of the AR glasses and a local edge computer. The glasses capture audio and video. We use a lightweight wake-word detector to start recording. The audio is turned into text using Whisper.cpp. The text and the camera image are sent to a local multimodal AI (Qwen-VL running on Ollama). The AI searches the local Vector DB (Chroma) for machine manuals and sends an audio answer back to the worker using a Text-to-Speech engine.
+The Platform Layer is a web-based system hosted on the company's local server. When an expert records a video, it is uploaded here. A background AI pipeline analyzes the video to create a text summary of the tools, parts, and steps. This summary is saved into the Vector DB. The frontend is a web portal (built with Vue/Nuxt) where workers can watch past videos and use a chat interface. When they chat, the backend (FastAPI) uses RAG to search both the official manuals and the AI-generated video summaries to give the best possible answer.
+5.2 Architecture Diagram
+(Insert Architecture Diagram Image Here showing the AR Glasses connecting to the Edge Server, and the Edge Server syncing with the Web Platform and Vector DB)
+6. Technology Stack Confirmation
+6.1 Backend
+Language: Python Framework: FastAPI Rationale: FastAPI is very fast, easy to use, and integrates perfectly with Python AI libraries like LangChain and Ollama. It is the industry standard for building AI backends.
+6.2 Frontend
+Framework: Nuxt / Vue.js Styling: Tailwind CSS UI Type: Web-based portal for viewing videos and a chat interface. Rationale: Vue is simple and easy for the team to learn quickly. Tailwind CSS allows us to build a clean, modern interface very fast during the hackathon.
+6.3 AI / ML
+Local AI Runner: Ollama Vision/Chat Model: Qwen2.5-VL (or LLaVA) for understanding images and text locally. Speech-to-Text: Whisper.cpp (runs fast on local hardware). RAG Framework: LangChain or LlamaIndex. Rationale: We must use local models to meet the "Sovereign AI" and "Operational Resilience" hackathon themes. Ollama makes it very easy to run powerful models without the internet.
+6.4 Data & Storage
+Vector DB: ChromaDB (runs locally, easy to set up). Relational DB: SQLite or PostgreSQL (for user logins and video metadata). File Storage: Local file system for saving the raw MP4 video recordings.
+6.5 Infrastructure
+Containerization: Docker Deployment: Local Edge Server / Ruggedized PC (No cloud).
